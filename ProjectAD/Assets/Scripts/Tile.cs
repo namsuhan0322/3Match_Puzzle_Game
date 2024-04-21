@@ -5,28 +5,9 @@ using UnityEngine.UI;
 
 public sealed class Tile : MonoBehaviour
 {
-    public string iconObjectName; // 타일에 해당하는 아이콘 게임 오브젝트의 이름
 
     public int x;
     public int y;
-
-    // 아이템 이름으로 타일을 찾는 메서드
-    public static Tile FindTileByIconObjectName(string iconObjectName)
-    {
-        // 모든 타일을 찾아서 검사
-        foreach (Tile tile in Board.Instance.Tiles)
-        {
-            // 현재 타일의 아이콘 게임 오브젝트의 이름이 찾고자 하는 아이콘 이름과 일치하는지 확인
-            if (tile.iconObjectName == iconObjectName)
-            {
-                // 일치하는 타일 반환
-                return tile;
-            }
-        }
-
-        // 일치하는 타일이 없는 경우 null 반환
-        return null;
-    }
 
     private Item _item;
 

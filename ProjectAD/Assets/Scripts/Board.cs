@@ -1,14 +1,19 @@
+using System;
 using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public sealed class Board : MonoBehaviour
 {
     public static Board Instance { get; private set; }
 
+    [SerializeField] private AudioClip collectSound;
+
+    [SerializeField] private AudioSource audioSource;
+    
     public Row[] rows;
 
     public Tile[,] Tiles { get; private set; }
@@ -49,9 +54,6 @@ public sealed class Board : MonoBehaviour
 
                 tile.Item = ItemDatabase.Items[Random.Range(0, ItemDatabase.Items.Length)];
 
-                // 아이콘 게임 오브젝트의 이름을 iconObjectName에 할당
-                tile.iconObjectName = tile.icon.gameObject.name;
-
                 Tiles[x, y] = tile;
             }
         }
@@ -60,7 +62,7 @@ public sealed class Board : MonoBehaviour
     public async void Select(Tile tile)
     {
         if (!_selection.Contains(tile)) _selection.Add(tile);
-
+            
         if (_selection.Count < 2) return;
 
         Debug.Log(message: $"Selected tiles at ({_selection[0].x}), ({_selection[0].y}) and ({_selection[1].x}), ({_selection[1].y})");
@@ -135,10 +137,14 @@ public sealed class Board : MonoBehaviour
                 var deflateSequence = DOTween.Sequence();
 
                 foreach (var connectedTile in connectedTiles) deflateSequence.Join(connectedTile.icon.transform.DOScale(Vector3.zero, TweenDuration));
+                
+                audioSource.PlayOneShot(collectSound);
 
                 await deflateSequence.Play()
                                      .AsyncWaitForCompletion();
 
+                ScoreCounter.Instance.Score += tile.Item.value * connectedTiles.Count;
+                
                 var inflateSequence = DOTween.Sequence();
 
                 foreach (var connectedTile in connectedTiles)
@@ -150,6 +156,9 @@ public sealed class Board : MonoBehaviour
 
                 await inflateSequence.Play() 
                                      .AsyncWaitForCompletion();
+
+                x = 0;
+                y = 0;
             }
         }
     }

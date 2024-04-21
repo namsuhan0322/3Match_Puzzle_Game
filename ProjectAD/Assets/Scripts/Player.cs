@@ -1,53 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    private Camera mainCamera;
+    // ê³µê²© ë²„íŠ¼ë“¤ì„ ë‹´ì„ ë°°ì—´
+    public Attack[] attacks;
 
-    private void Start()
+    void Start()
     {
-        // ¸ÞÀÎ Ä«¸Þ¶ó °¡Á®¿À±â
-        mainCamera = Camera.main;
-    }
-
-    private void Update()
-    {
-        // ¸¶¿ì½º ¿ÞÂÊ ¹öÆ°ÀÌ ´­·È´ÂÁö È®ÀÎ
-        if (Input.GetMouseButtonDown(0))
+        // ëª¨ë“  ê³µê²© ë²„íŠ¼ì— ëŒ€í•´ í´ë¦­ ì´ë²¤íŠ¸ë¥¼ ì¶”ê°€
+        foreach (Attack attack in attacks)
         {
-            // ¸¶¿ì½º À§Ä¡¸¦ È­¸é ÁÂÇ¥·Î °¡Á®¿À±â
-            Vector3 mousePosition = Input.mousePosition;
-            // È­¸é ÁÂÇ¥¸¦ ¿ùµå ÁÂÇ¥·Î º¯È¯
-            Vector3 worldPosition = mainCamera.ScreenToWorldPoint(mousePosition);
-
-            // º¯È¯µÈ ¿ùµå ÁÂÇ¥¸¦ º¸µåÀÇ Å¸ÀÏ À§Ä¡·Î ¸ÅÇÎ
-            Tile tile = GetTileAtPosition(worldPosition);
-            if (tile != null)
-            {
-                // º¸µåÀÇ Select ¸Þ¼­µå È£Ãâ
-                Board.Instance.Select(tile);
-            }
-        }
-    }
-
-    private Tile GetTileAtPosition(Vector3 position)
-    {
-        // ÇÈ¼¿ ÁÂÇ¥¸¦ º¸µåÀÇ Å¸ÀÏ ÁÂÇ¥·Î º¯È¯
-        int x = Mathf.FloorToInt(position.x);
-        int y = Mathf.FloorToInt(position.y);
-
-        // º¯È¯µÈ Å¸ÀÏ ÁÂÇ¥°¡ º¸µå ³»¿¡ ÀÖ´ÂÁö È®ÀÎ
-        if (x >= 0 && x < Board.Instance.Width && y >= 0 && y < Board.Instance.Height)
-        {
-            // ÇØ´ç Å¸ÀÏ ¹ÝÈ¯
-            return Board.Instance.Tiles[x, y];
-        }
-        else
-        {
-            // º¸µå ¹üÀ§¸¦ ¹þ¾î³­ °æ¿ì null ¹ÝÈ¯
-            return null;
+            attack.GetComponent<Button>();
         }
     }
 }
