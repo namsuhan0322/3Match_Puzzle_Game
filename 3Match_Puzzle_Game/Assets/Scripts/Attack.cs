@@ -25,45 +25,44 @@ public class Attack : MonoBehaviour
         bulletSpawner = FindObjectOfType<BulletSpawner>();
     }
 
-    // 각 공격에 대한 호출 메서드
-    public void PerformAttack()
+    // 근접 공격 호출 메서드
+    public void MeleeAttack()
     {
-        // 해당 공격에 필요한 점수를 가져옴
-        int cost = 0;
-        string attackType = "";
+        PerformAttack(meleeAttackCost, "근접");
+    }
 
-        // 해당 버튼에 따라 공격 종류와 점수를 설정
-        if (gameObject.name == "MeleeButton")
-        {
-            cost = meleeAttackCost;
-            attackType = "근접";
-        }
-        else if (gameObject.name == "FireButton")
-        {
-            cost = fireAttackCost;
-            attackType = "불";
-        }
-        else if (gameObject.name == "IceButton")
-        {
-            cost = iceAttackCost;
-            attackType = "얼음";
-        }
-        else if (gameObject.name == "LightningButton")
-        {
-            cost = lightningAttackCost;
-            attackType = "번개";
-        }
-        else if (gameObject.name == "BowButton")
-        {
-            cost = bowAttackCost;
-            attackType = "활";
-        }
+    // 불 공격 호출 메서드
+    public void FireAttack()
+    {
+        PerformAttack(fireAttackCost, "불");
+    }
 
+    // 물 공격 호출 메서드
+    public void IceAttack()
+    {
+        PerformAttack(iceAttackCost, "얼음");
+    }
+
+    // 번개 공격 호출 메서드
+    public void LightningAttack()
+    {
+        PerformAttack(lightningAttackCost, "번개");
+    }
+
+    // 활 공격 호출 메서드
+    public void BowAttack()
+    {
+        PerformAttack(bowAttackCost, "활");
+    }
+
+    // 각 공격에 대한 호출 메서드
+    private void PerformAttack(int cost, string attackType)
+    {
         // 플레이어의 점수가 공격에 필요한 점수보다 충분한지 확인
         if (_scoreCounter.Score >= cost)
         {
             // 공격 로직을 구현
-            Debug.Log($"{attackType} 공격을 실행합니다!");
+            Debug.Log($"코스트 {cost} 의 {attackType} 공격을 실행합니다!");
 
             // 점수를 감소시킴
             _scoreCounter.Score -= cost;

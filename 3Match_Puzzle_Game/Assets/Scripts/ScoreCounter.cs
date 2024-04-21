@@ -21,7 +21,7 @@ public sealed class ScoreCounter : MonoBehaviour
             _score = value; // 점수를 설정
 
             // TMPro TextMeshProUGUI 객체에 현재 점수를 표시
-            scoreText.SetText($"{_score}/100");
+            scoreText.SetText($"{_score}/999");
         }
     }
     

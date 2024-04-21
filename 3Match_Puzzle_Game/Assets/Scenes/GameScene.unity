@@ -2348,7 +2348,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1203683299}
         m_TargetAssemblyTypeName: Attack, Assembly-CSharp
-        m_MethodName: PerformAttack
+        m_MethodName: MeleeAttack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
