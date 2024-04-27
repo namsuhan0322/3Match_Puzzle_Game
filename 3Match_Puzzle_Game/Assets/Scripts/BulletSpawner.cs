@@ -15,7 +15,7 @@ public class BulletSpawner : MonoBehaviour
         // 최근 생성 이후의 누적 시간을 0으로 초기화
         time_after_spawn = 0;
 
-        // 탄알 생성 간격을 spqwn_rate_min과 spqwn_rate_max 사이에서 랜덤 지정
+        // 탄알 생성 간격을 spqwn_rate_min과 spqwn_rate_max 사이에서 랜덤 지정  
         spawn_rate = Random.Range(spqwn_rate_min, spqwn_rate_max);
 
         // Enemy 컴포넌트를 가진 게임 오브젝트를 찾아 조준 대상으로 설정
@@ -37,15 +37,26 @@ public class BulletSpawner : MonoBehaviour
     
     public void SpawnBullet()
     {
-        // bullet_prefab의 본제본을
-        // transform.position 위치와 회전으로 생성
+        // 총알 생성
         GameObject bullet = Instantiate(bullet_prefab, transform.position, Quaternion.identity);
 
-        // 생성된 bullet 게임 오브젝트의 방향을 설정
+        // 총알 방향 설정
         Vector2 direction = (target.position - transform.position).normalized;
-        bullet.GetComponent<Rigidbody2D>().velocity = direction * bullet.GetComponent<Bullet>().speed;
+    
+        // 총알 Rigidbody2D 컴포넌트 설정
+        Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
+        bulletRigidbody.velocity = direction * bullet.GetComponent<Bullet>().speed;
+    
+        // 총알이 적(Enemy)을 향하도록 회전
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        bullet.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
-        // 다음번 생성 간격을 spqwn_rate_min, spqwn_rate_max 사이에서 랜덤 지정
-        spawn_rate = Random.Range(spqwn_rate_min, spqwn_rate_max);
+        if (enemies.Length > 0)
+        {
+            // 배열에서 랜덤하게 적(Enemy)을 선택하여 대상으로 설정
+            target = enemies[Random.Range(0, enemies.Length)].transform;
+        }
     }
 }

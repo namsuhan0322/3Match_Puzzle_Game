@@ -73,7 +73,7 @@ public class Attack : MonoBehaviour
         else
         {
             // 플레이어의 점수가 부족할 때 처리할 내용 추가 가능
-            Debug.Log("점수가 부족하여 공격할 수 없습니다.");
+            Debug.Log($"코스트 {cost} 의 {attackType} 공격의 코스트가 부족하여 공격할 수 없습니다.");
         }
     }
 }
