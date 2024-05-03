@@ -19,7 +19,7 @@ public class BulletSpawner : MonoBehaviour
         spawn_rate = Random.Range(spqwn_rate_min, spqwn_rate_max);
 
         // Enemy 컴포넌트를 가진 게임 오브젝트를 찾아 조준 대상으로 설정
-        target = FindObjectOfType<Enemy>().transform;
+        target = FindObjectOfType<MonsterSpawner>().transform;
     }
 
     void Update()
