@@ -1,61 +1,95 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MonsterSpawner : MonoBehaviour
 {
-    public GameObject[] monsterPrefabs; // ¿©·¯ Á¾·ùÀÇ ¸ó½ºÅÍ ÇÁ¸®ÆÕÀ» ÀúÀåÇÒ ¹è¿­
-    public Transform spawnPosition; // ¸ó½ºÅÍ°¡ »ı¼ºµÉ À§Ä¡
-    
-    private int currentMonsterIndex = 0; // ÇöÀç ½ºÆùÇÒ ¸ó½ºÅÍÀÇ ÀÎµ¦½º
-    private GameObject currentSpawnedMonster;
+    public GameObject monsterPrefab;
+    public float spawnDelay = 3f;
+    public Transform spawnPoint;
 
-    public float spawnInterval = 3.0f;
+    private bool areMonstersAlive;
+    private int maxStages = 3; // ìµœëŒ€ ìŠ¤í…Œì´ì§€ ìˆ˜
+    
+    public GameObject gameClear;
 
     void Start()
     {
-        SpawnNextMonster();
+        areMonstersAlive = true;
+        Invoke("SpawnMonster", spawnDelay);
     }
 
-    public void SpawnNextMonster()
+    void Update()
     {
-        if (currentMonsterIndex < monsterPrefabs.Length)
+        if (!areMonstersAlive)
         {
-            // ÇöÀç ÀÎµ¦½º¿¡ ÇØ´çÇÏ´Â ¸ó½ºÅÍ ÇÁ¸®ÆÕÀ» ½ºÆù
-            GameObject nextMonsterPrefab = monsterPrefabs[currentMonsterIndex];
-            currentSpawnedMonster = Instantiate(nextMonsterPrefab, spawnPosition.position, spawnPosition.rotation);
-
-            // ¸ó½ºÅÍ°¡ »ç¸ÁÇÒ ¶§ÀÇ ÀÌº¥Æ®¿¡ ´ëÇÑ ±¸µ¶
-            Enemy enemyScript = currentSpawnedMonster.GetComponent<Enemy>();
-            if (enemyScript != null)
-            {
-                enemyScript.OnDeath += HandleMonsterDeath;
-            }
-
-            currentMonsterIndex++; // ´ÙÀ½ ¸ó½ºÅÍ ÀÎµ¦½º·Î ÀÌµ¿
-        }
-        else
-        {
-            // ¸ğµç ¸ó½ºÅÍ°¡ ½ºÆùµÈ °æ¿ì º¸½º ¸ó½ºÅÍ ½ºÆù
-            SpawnBoss();
+            LoadNextStage();
         }
     }
 
-    private void HandleMonsterDeath()
+    void SpawnMonster()
     {
-        // ÇöÀç ½ºÆùµÈ ¸ó½ºÅÍ »ç¸Á ½Ã ´ÙÀ½ ¸ó½ºÅÍ ½ºÆù
-        StartCoroutine(WaitAndSpawnNextMonster());
+        Instantiate(monsterPrefab, spawnPoint.position, Quaternion.identity);
     }
 
-    private IEnumerator WaitAndSpawnNextMonster()
+    public void SetMonstersAlive(bool alive)
     {
-        yield return new WaitForSeconds(spawnInterval); // ÀÏÁ¤ ½Ã°£ ´ë±â ÈÄ ´ÙÀ½ ¸ó½ºÅÍ ½ºÆù
-        SpawnNextMonster();
+        areMonstersAlive = alive;
+    }
+    
+    public void EnemyKilled()
+    {
+        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Enemy");
+        if (monsters.Length == 0)
+        {
+            SetMonstersAlive(false);
+        }
+    }
+    
+    void LoadNextStage()
+    {
+        StartCoroutine(TransitionToNextStage());
     }
 
-    private void SpawnBoss()
+    private IEnumerator TransitionToNextStage()
     {
-        // º¸½º ¸ó½ºÅÍ¸¦ ½ºÆùÇÏ´Â ·ÎÁ÷À» ¿©±â¿¡ ±¸Çö
-        Debug.Log("º¸½º ¸ó½ºÅÍ µîÀå!");
+        // í˜ì´ë“œ ì•„ì›ƒ íš¨ê³¼
+        FadeEffect fadeEffect = FindObjectOfType<FadeEffect>();
+        if (fadeEffect != null)
+        {
+            yield return StartCoroutine(fadeEffect.Fade(0f, 1f)); // í˜ì´ë“œ ì•„ì›ƒ
+        }
+
+        // í˜„ì¬ ì”¬ì˜ ì´ë¦„ì„ ê°€ì ¸ì˜´
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        // í˜„ì¬ ìŠ¤í…Œì´ì§€ì˜ ë²ˆí˜¸ë¥¼ ì¶”ì¶œ
+        int currentStageNumber = int.Parse(currentSceneName.Substring("Stage".Length));
+
+        if (currentStageNumber < maxStages)
+        {
+            // ë‹¤ìŒ ìŠ¤í…Œì´ì§€ë¡œ ì´ë™
+            int nextStageNumber = currentStageNumber + 1;
+            string nextStageName = "Stage" + nextStageNumber;
+            SceneManager.LoadScene(nextStageName);
+        }
+
+        GameManager gameManager = FindObjectOfType<GameManager>();
+        
+        if (currentStageNumber == maxStages)
+        {
+            gameManager.EnemyKilled();
+            
+            Time.timeScale = 0;
+            
+            gameClear.SetActive(true);
+        }
+
+        // í˜ì´ë“œ ì¸ íš¨ê³¼
+        if (fadeEffect != null)
+        {
+            yield return StartCoroutine(fadeEffect.Fade(1f, 0f)); // í˜ì´ë“œ ì¸ (ì‹œê°„ì€ 0.5ì´ˆë¡œ ì„¤ì •)
+        }
     }
 }

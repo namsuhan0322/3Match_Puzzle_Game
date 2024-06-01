@@ -1,17 +1,30 @@
+using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class Enemy : MonoBehaviour
 {
-    public UnityAction OnDeath; // 몬스터 사망 이벤트
+    private Animator _animator;
+
+    void Start()
+    {
+        _animator = GetComponent<Animator>();
+    }
 
     public void Die()
     {
-        gameObject.SetActive(false); // 몬스터 비활성화
+        // 사망 애니메이션 트리거 설정
+        _animator.SetTrigger("doDead");
+        // 코루틴 시작
+        StartCoroutine(DeadRoutine());
+    }
 
-        if (OnDeath != null)
-        {
-            OnDeath.Invoke(); // 몬스터 사망 이벤트 호출
-        }
+    private IEnumerator DeadRoutine()
+    {
+        // 사망 애니메이션 길이만큼 대기
+        yield return new WaitForSeconds(_animator.GetCurrentAnimatorStateInfo(0).length);
+        // 게임 오브젝트 비활성화
+        gameObject.SetActive(false);
+        // GameManager를 통해 몬스터가 죽었음을 알림
+        GameManager.Instance.EnemyKilled();
     }
 }

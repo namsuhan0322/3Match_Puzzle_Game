@@ -6,6 +6,24 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GameScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    path: Assets/Scenes/Main/MainScene.unity
+    guid: 2a271b3ef6213a843bd5dedbf79b673e
+  - enabled: 1
+    path: Assets/Scenes/EffectScene/LoadingScene.unity
+    guid: 08aaae660a564124ba9dea7295a66633
+  - enabled: 1
+    path: Assets/Scenes/EffectScene/SoundSettingScene.unity
+    guid: 64688fe2e30edec4cb6be73690c51ed8
+  - enabled: 1
+    path: Assets/Scenes/GameScene/Stage1.unity
+    guid: 70dfd48371f5a474eb776a2700ee8d7a
+  - enabled: 1
+    path: Assets/Scenes/EffectScene/FadeScene.unity
+    guid: d8fe9158edb425844bf9639abe32b6f1
+  - enabled: 1
+    path: Assets/Scenes/GameScene/Stage2.unity
+    guid: 1599b0fa8b777a344aad76c26c10b9c0
+  - enabled: 1
+    path: Assets/Scenes/GameScene/Stage3.unity
+    guid: 16629252bbe219f40a3e66a1997e0863
   m_configObjects: {}

@@ -1,79 +1,115 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Attack : MonoBehaviour
 {
     // ScoreCounter의 인스턴스
     private ScoreCounter _scoreCounter;
-    
-    // BulletSpawner 인스턴스
-    private BulletSpawner bulletSpawner; 
 
-    // 플레이어 공격에 필요한 점수
+    // BulletSpawner 인스턴스
+    private BulletSpawner bulletSpawner;
+    
+    // PlayerHealth 인스턴스
+    private PlayerHealth playerHealth;
+
+    // 공격에 필요한 점수
     public int meleeAttackCost = 50;
     public int fireAttackCost = 100;
     public int iceAttackCost = 70;
-    public int lightningAttackCost = 150;
+    public int playerHealCost = 50;
     public int bowAttackCost = 30;
+
+    // 공격 버튼 참조
+    public Button meleeAttackButton;
+    public Button fireAttackButton;
+    public Button iceAttackButton;
+    public Button playerHealButton;
+    public Button bowAttackButton;
 
     void Awake()
     {
-        // ScoreCounter의 인스턴스를 가져옴
-        _scoreCounter = ScoreCounter.Instance;
-
-        // 버튼에 클릭 이벤트 리스너 추가는 Start에서 수행
-        
+        // BulletSpawner의 인스턴스를 가져옴
         bulletSpawner = FindObjectOfType<BulletSpawner>();
+        
+        // PlayerHealth 인스턴스를 가져옴
+        playerHealth = FindObjectOfType<PlayerHealth>();
     }
 
-    // 근접 공격 호출 메서드
+    void Start()
+    {
+        _scoreCounter = ScoreCounter.Instance;
+        
+        playerHealth = FindObjectOfType<PlayerHealth>();
+    }
+    
+    void Update()
+    {
+        meleeAttackButton.interactable = _scoreCounter.Score >= meleeAttackCost;
+        fireAttackButton.interactable = _scoreCounter.Score >= fireAttackCost;
+        iceAttackButton.interactable = _scoreCounter.Score >= iceAttackCost;
+        playerHealButton.interactable = _scoreCounter.Score >= playerHealCost;
+        bowAttackButton.interactable = _scoreCounter.Score >= bowAttackCost;
+    }
+
     public void MeleeAttack()
     {
         PerformAttack(meleeAttackCost, "근접");
     }
 
-    // 불 공격 호출 메서드
     public void FireAttack()
     {
         PerformAttack(fireAttackCost, "불");
     }
 
-    // 물 공격 호출 메서드
     public void IceAttack()
     {
         PerformAttack(iceAttackCost, "얼음");
     }
 
-    // 번개 공격 호출 메서드
-    public void LightningAttack()
+    public void PlayerHeal()
     {
-        PerformAttack(lightningAttackCost, "번개");
+        PerformHeal(playerHealCost);
     }
 
-    // 활 공격 호출 메서드
     public void BowAttack()
     {
         PerformAttack(bowAttackCost, "활");
     }
 
-    // 각 공격에 대한 호출 메서드
     private void PerformAttack(int cost, string attackType)
     {
-        // 플레이어의 점수가 공격에 필요한 점수보다 충분한지 확인
         if (_scoreCounter.Score >= cost)
         {
-            // 공격 로직을 구현
+            _scoreCounter.Score -= cost;
             Debug.Log($"코스트 {cost} 의 {attackType} 공격을 실행합니다!");
+            bulletSpawner.SpawnBullet(); 
+        }
+    }
 
+    private void PerformHeal(int cost)
+    {
+        // 플레이어의 점수가 힐에 필요한 점수보다 충분한지 확인
+        if (_scoreCounter.Score >= cost)
+        {
             // 점수를 감소시킴
             _scoreCounter.Score -= cost;
 
-            // 총알 생성
-            bulletSpawner.SpawnBullet(); // BulletSpawner의 SpawnBullet() 메서드 호출
+            // 플레이어 힐
+            if (playerHealth != null)
+            {
+                playerHealth.Heal(30);
+            }
+
+            Debug.Log($"코스트 {cost} 를 사용하여 플레이어를 힐합니다!");
         }
-        else
+    }
+    
+    // 플레이어에게 데미지 주는 메서드
+    public void DamagePlayer(int damageAmount)
+    {
+        if (playerHealth != null)
         {
-            // 플레이어의 점수가 부족할 때 처리할 내용 추가 가능
-            Debug.Log($"코스트 {cost} 의 {attackType} 공격의 코스트가 부족하여 공격할 수 없습니다.");
+            playerHealth.TakeDamage(damageAmount);
         }
     }
 }
